@@ -1,0 +1,126 @@
+#rule1: when assigning a value to the var, NEVER give space before and after =
+#rule2: whenever in doubt, use '' except when its $
+#Rule3: in case of <,> or >>, the RHS is always a file and in case of >, the file is truncated to 0 bytes
+#Rule3, part2: whenever we encounter the |, the RHS is a command
+
+
+
+#make commands/aliases/vars permanant: make changes in /etc/profile file which is owned by root
+#since this file is owned by root we cannot make changes to it
+#so use .bash_profile file
+
+##fastq stats
+zcat Undetermined_S0_L002_R1_001.fastq.gz | grep ' 1:N:0:' | cut -d":" -f10 | head -n1000000 | perl -e 'my %freq=(); while(<>){chomp; $freq{$_}++}; foreach(sort{$freq{$b} <=> $freq{$a}}keys %freq){print "$_\t$freq{$_}\n";}' | head
+
+zcat Undetermined_S0_L008_R1_001.fastq.gz | grep ' 1:N:0:' | cut -d":" -f10 | cut -d"+" -f1 | head -n100000 | perl -e 'my %freq=(); while(<>){chomp; $freq{$_}++}; foreach(sort{$freq{$b} <=> $freq{$a}}keys %freq){print "$_\t$freq{$_}\n";}' | head
+
+zcat Undetermined_S0_L008_R1_001.fastq.gz | grep ' 1:N:0:' | cut -d":" -f10 | head -n100000 | perl -e 'my %freq=(); while(<>){chomp; $freq{$_}++}; foreach(sort{$freq{$b} <=> $freq{$a}}keys %freq){print "$_\t$freq{$_}\n";}' | head
+
+
+##GFF feature types
+perl -F"\t" -ane 'BEGIN{my %freq=();} next if /^#/;$freq{$F[2]}++; END{foreach(sort keys %freq){print "$_\t$freq{$_}\n"}}' FungiDB-33_TmarneffeiATCC18224.gff
+
+
+cp generalJob.sh pearlJob.sh && cat ~/scripts/generalJob.sh pearlJob.sh | perl -ne 'if(/^#!\/bin\/sh/ .. /^#\$ -M lakhanp@umac/){next}else{print $_}' > generalJob.sh
+
+#Install GNU parallel: Amazing command to run multiple jobs
+(wget -O - pi.dk/3 || curl pi.dk/3/ || fetch -o - http://pi.dk/3) | bash
+
+#IMP perl one liners:
+https://blogs.oracle.com/ksplice/entry/the_top_10_tricks_of
+http://www.catonmat.net/blog/perl-one-liners-explained-part-six/
+
+# the always present hallo world program, adapted to a Math department
+perl -e 'print "Hello Mr Euler!\n"'
+
+# rename in each file name the string aaa by bbb
+ls | perl -ne 'chomp; next unless -e; $o = $_; s/aaa/bbb/; next if -e; rename $o, $_'; 
+
+# add first and last column in each line of file foo.txt and print it out
+perl -lane 'print $F[0] + $F[-1]' foo.txt
+
+# print lines 15 to 17 of file foo.txt
+perl -ne 'print if 15 .. 17' foo.txt
+
+# a second way to print lines 3 to 5 of file foo.txt
+perl -pe 'exit if 3<$. && $.<5' foo.txt
+
+# change all words "foo"s to "bar"s in every .c file and keep backups
+perl -p -i.bak -e 's/\bfoo\b/bar/g' *.c
+
+# the same but without backup. Remember the flags: "eat the pie"
+perl -p -i -e 's/foo/bar/g' *.c
+
+# changes ^M newline characters to newlines 
+perl  -p -i -e 's/\012?\015/\n/g'  $1
+
+# the same but with all files with name filename
+perl -p -i -e  's/foo/bar' `find . -name "filename"`
+
+# substitution can also be applied to binary files like test.ppm
+perl -p -i -e 's/255/127/g' test.ppm
+
+# substitute "xyz.math" to "abc.math" in every .html file and keep backups
+perl -p -i.bak -e 's/xyz\.math/abc\.math/g' *.html
+
+# insert department name after each title and keep backup
+perl -p -i.bak -e 's#<title>#<title>Harvard .: #i' *.html
+
+# delete first 10 lines in foo.txt and keep backup foo.txt.bak
+perl -i.bak -ne 'print unless 1 .. 10' foo.txt
+
+# change isolated occurrence of aaa to bbb in each file *.c or *.h
+perl -p -i.bak -e 's{\baaa\b}{bbb}g' *.[ch]
+
+# reverses lines of file foo.txt and print it
+perl -e 'print reverse <>' foo.txt
+
+# find palindromes in a dictionary /usr/share/dict/words
+perl -lne 'print if $_ eq reverse' /usr/share/dict/words
+
+# reverses paragraphs in file foo.txt
+perl -00 -e 'print reverse <>' foo.txt
+
+# increments all numbers in foo.tx by 1
+perl -pe 's/(\d+)/ 1 + $1 /ge' foo.txt
+
+# reverses order of characters in each line of foo.txt
+perl -nle 'print scalar reverse $_' foo.txt
+
+# print lines beween START and END in foo.txt to STDOUT
+perl -ne 'print if /^START$/ .. /^END$/' foo.txt
+
+# delete lines beween START and END and backup original file 
+perl -i.old -ne 'print unless /^START$/ .. /^END$/' foo.txt
+
+# look for duplicated words in a line
+perl -0777 -ne 'print "$.: doubled $_\n" while /\b(\w+)\b\s+\b\1\b/gi' foo.txt
+
+# start Perl debugger "stand-alone"
+perl -d -e 42
+
+# run a Perl program program.pl with warnings
+perl -w program.pl
+
+# run a Perl program program.pl with debugger
+perl -d program.pl
+
+# Run perl program program.pl, check syntax, print warnings
+perl -wc program.pl
+
+
+
+#Important linux commands:
+1) ps aux | grep -E -e "PROCESS_ID"
+2) Create tar file very fast: tar -cvf - INPUT | pigz - > OUTPUT.tar.gz
+3) df -h
+4) htop
+
+
+
+#important installation issues fixed:
+1) issue: undefined reference to `inflateReset2'
+http://stackoverflow.com/questions/19738464/pngfix-c2151-undefined-reference-to-inflatereset2
+run ./configure with LDFLAGS and CPPFLAGS set to the lib and include directory where the newer version of zlib was installed. 
+same applies to make
+
